@@ -30,6 +30,8 @@ private:
     QPushButton* startButton;
     QPushButton* stopButton;
 
+    //Checkbox for whether keep interactive with the window
+    QCheckBox* keepInteractive;
     //Checkbox for minimize
     QCheckBox* minimizingCheckBox;
 
@@ -42,6 +44,14 @@ private:
     QMenu* trayMenu;       // Tray Right-Click Menu
     QAction* restoreAction;    // Restore Window Action
     QAction* quitAction;      // Quit Program Action
+
+    struct HookData
+    {
+        bool isChecked;
+    };
+
+    static WindowPins* instance;
+    HookData hookData;
 
 private:
     static HWND targetWindow;

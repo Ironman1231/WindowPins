@@ -4,6 +4,9 @@
 // Define and initialize static member variable
 HWND WindowPins::targetWindow = NULL; // Initialize to NULL (or nullptr in C++)
 
+// Define static instance pointer
+WindowPins* WindowPins::instance = nullptr;
+
 WindowPins::WindowPins(QWidget *parent)
     : QWidget(parent)
 {
@@ -12,6 +15,8 @@ WindowPins::WindowPins(QWidget *parent)
     startButton = new QPushButton("Start", this);
     startButton->setToolTip("Right click a window to make it always top after clicking Start button");
     stopButton = new QPushButton("Stop", this);
+    keepInteractive = new QCheckBox("Keep interactive with the window", this);
+    keepInteractive->setChecked(false);
     minimizingCheckBox = new QCheckBox("Minimizing to tray", this);
     minimizingCheckBox->setChecked(true);
 
@@ -25,6 +30,7 @@ WindowPins::WindowPins(QWidget *parent)
     functionLayout->addWidget(stopButton);
 
     mainLayout->addLayout(functionLayout);
+    mainLayout->addWidget(keepInteractive);
     mainLayout->addWidget(minimizingCheckBox);
 
     centralWidget->setLayout(mainLayout);
@@ -91,7 +97,7 @@ void WindowPins::setAlwaysOnTop(HWND hwnd, bool alwaysOnTop, bool nonInteractive
     {
         SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
-        if (nonInteractive)
+        if (!nonInteractive)
         {
             LONG style = GetWindowLong(hwnd, GWL_EXSTYLE);
             style |= (WS_EX_TRANSPARENT | WS_EX_LAYERED);
@@ -121,7 +127,7 @@ LRESULT WindowPins::mouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
         targetWindow = WindowFromPoint(cursorPos);
         if (targetWindow)
         {
-            setAlwaysOnTop(targetWindow, true, true);
+            setAlwaysOnTop(targetWindow, true, instance->hookData.isChecked);
             PostQuitMessage(0);   // Send WM_QUIT to stop the message loop
         }
     }
@@ -132,6 +138,10 @@ void WindowPins::startOnTop()
 {
     //Stop the previous on top window
     stopOnTop();
+
+    //Get the value of checkbox
+    instance = this;
+    hookData.isChecked = keepInteractive->isChecked();
 
     // Install mouse hook
     HHOOK mouseHook = SetWindowsHookEx(WH_MOUSE_LL, mouseHookProc, NULL, 0);
