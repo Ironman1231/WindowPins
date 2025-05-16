@@ -37,7 +37,7 @@ WindowPins::WindowPins(QWidget *parent)
 
     //Create icon of tray
     trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setIcon(QIcon(":/WindowPins/Icon/Trigger.png"));    // Set Tray Icon
+    trayIcon->setIcon(QIcon(":/WindowPins/Icon/Trigger.ico"));    // Set Tray Icon
     trayIcon->setToolTip("WindowPins Application");    // Set tray tips
 
     //Create menu of tray

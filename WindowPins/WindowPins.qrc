@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/WindowPins">
-        <file>Icon/Trigger.png</file>
+        <file>Icon/Trigger.ico</file>
     </qresource>
 </RCC>
